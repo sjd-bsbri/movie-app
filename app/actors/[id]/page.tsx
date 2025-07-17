@@ -117,13 +117,13 @@
 
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
+import type { Metadata } from 'next'; // Using 'type' import for clarity
 import { featuredActors } from '@/app/_data/featured-actors';
 import { movies } from '@/app/_data/movies';
 import MovieList from '@/app/_components/MovieList';
 import { Cake, Globe, Ruler, Award, Instagram, Twitter } from 'lucide-react';
 
-// Props type defined inline for clarity and to avoid conflicts
+// This is the most robust way to define props for dynamic pages in the App Router
 type PageProps = {
   params: { id: string };
 };
@@ -134,23 +134,23 @@ export function generateStaticParams() {
   }));
 }
 
-// This helper function is synchronous as it doesn't perform any async operations
-function getActorById(id: number) {
+// This helper function can be async without issues
+async function getActorById(id: number) {
   return featuredActors.find((actor) => actor.id === id);
 }
 
-// generateMetadata MUST be async, as required by Next.js
+// generateMetadata must be async
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const actor = getActorById(parseInt(params.id)); // No await needed here
+  const actor = await getActorById(parseInt(params.id));
   if (!actor) {
     return { title: 'بازیگر یافت نشد' };
   }
   return { title: actor.name, description: `بیوگرافی و کارنامه هنری ${actor.name}` };
 }
 
-// The Page component itself can be synchronous
-export default function ActorProfilePage({ params }: PageProps) {
-  const actor = getActorById(parseInt(params.id)); // No await needed here
+// The main page component must also be async if it uses await
+export default async function ActorProfilePage({ params }: PageProps) {
+  const actor = await getActorById(parseInt(params.id));
 
   if (!actor) {
     notFound();
