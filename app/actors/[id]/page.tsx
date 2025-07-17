@@ -117,13 +117,13 @@
 
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { featuredActors } from '@/app/_data/featured-actors';
 import { movies } from '@/app/_data/movies';
 import MovieList from '@/app/_components/MovieList';
 import { Cake, Globe, Ruler, Award, Instagram, Twitter } from 'lucide-react';
 
-// FIX 1: یک نوع مشخص برای پراپرتی‌های صفحه تعریف می‌کنیم
+// Props type defined inline for clarity and to avoid conflicts
 type PageProps = {
   params: { id: string };
 };
@@ -134,20 +134,23 @@ export function generateStaticParams() {
   }));
 }
 
-// FIX 2: این تابع async باقی می‌ماند تا با بقیه کد هماهنگ باشد
-async function getActorById(id: number) {
+// This helper function is synchronous as it doesn't perform any async operations
+function getActorById(id: number) {
   return featuredActors.find((actor) => actor.id === id);
 }
 
+// generateMetadata MUST be async, as required by Next.js
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const actor = await getActorById(parseInt(params.id));
-  if (!actor) return { title: 'بازیگر یافت نشد' };
+  const actor = getActorById(parseInt(params.id)); // No await needed here
+  if (!actor) {
+    return { title: 'بازیگر یافت نشد' };
+  }
   return { title: actor.name, description: `بیوگرافی و کارنامه هنری ${actor.name}` };
 }
 
-// FIX 3: کامپوننت اصلی صفحه باید async باشد
-export default async function ActorProfilePage({ params }: PageProps) {
-  const actor = await getActorById(parseInt(params.id));
+// The Page component itself can be synchronous
+export default function ActorProfilePage({ params }: PageProps) {
+  const actor = getActorById(parseInt(params.id)); // No await needed here
 
   if (!actor) {
     notFound();
@@ -155,11 +158,11 @@ export default async function ActorProfilePage({ params }: PageProps) {
   
   const knownForMovies = movies.filter(movie => actor.knownFor.includes(movie.id));
 
-  const calculateAge = (birthDate: string) => {
+  const calculateAge = (birthDate: string): string => {
     const birthYear = parseInt(birthDate.match(/\d{4}/)?.[0] || '0');
     if (birthYear === 0) return '';
     const currentYear = new Date().getFullYear();
-    return currentYear - birthYear;
+    return (currentYear - birthYear).toString();
   };
   const age = calculateAge(actor.birthDate);
 
