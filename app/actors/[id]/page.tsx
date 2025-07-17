@@ -113,8 +113,6 @@
 // }
 
 
-// sjd-bsbri/movie-app/movie-app-36c7f19d74c18f4678270e3b09686be4788d77ff/app/actors/[id]/page.tsx
-
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next'; // Using 'type' import for clarity
@@ -123,10 +121,7 @@ import { movies } from '@/app/_data/movies';
 import MovieList from '@/app/_components/MovieList';
 import { Cake, Globe, Ruler, Award, Instagram, Twitter } from 'lucide-react';
 
-// This is the most robust way to define props for dynamic pages in the App Router
-type PageProps = {
-  params: { id: string };
-};
+// حذف PageProps و تعریف تایپ مستقیم در امضا
 
 export function generateStaticParams() {
   return featuredActors.map((actor) => ({
@@ -139,8 +134,8 @@ async function getActorById(id: number) {
   return featuredActors.find((actor) => actor.id === id);
 }
 
-// generateMetadata must be async
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+// اصلاح امضای generateMetadata با تایپ مستقیم پارامتر
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const actor = await getActorById(parseInt(params.id));
   if (!actor) {
     return { title: 'بازیگر یافت نشد' };
@@ -148,8 +143,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return { title: actor.name, description: `بیوگرافی و کارنامه هنری ${actor.name}` };
 }
 
-// The main page component must also be async if it uses await
-export default async function ActorProfilePage({ params }: PageProps) {
+// اصلاح امضای کامپوننت اصلی با تایپ مستقیم پارامتر
+export default async function ActorProfilePage({ params }: { params: { id: string } }) {
   const actor = await getActorById(parseInt(params.id));
 
   if (!actor) {
