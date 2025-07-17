@@ -127,29 +127,34 @@ export function generateStaticParams() {
   }));
 }
 
-async function getActorById(id: number) {
-  return featuredActors.find(actor => actor.id === id);
+async function getActorById(id: string) {
+  const numericId = parseInt(id, 10);
+  return featuredActors.find(actor => actor.id === numericId);
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const actor = await getActorById(parseInt(params.id));
-  if (!actor) {
-    return { title: 'بازیگر یافت نشد' };
-  }
+export async function generateMetadata(
+  { params }: { params: { id: string } }
+): Promise<Metadata> {
+  const actor = await getActorById(params.id);
+  if (!actor) return { title: 'بازیگر یافت نشد' };
   return {
     title: actor.name,
     description: `بیوگرافی و کارنامه هنری ${actor.name}`,
   };
 }
 
-export default async function ActorProfilePage({ params }: { params: { id: string } }) {
-  const actor = await getActorById(parseInt(params.id));
+export default async function ActorProfilePage(
+  { params }: { params: { id: string } }
+) {
+  const actor = await getActorById(params.id);
 
   if (!actor) {
     notFound();
   }
 
-  const knownForMovies = movies.filter(movie => actor.knownFor.includes(movie.id));
+  const knownForMovies = movies.filter(movie =>
+    actor.knownFor.includes(movie.id)
+  );
 
   const calculateAge = (birthDate: string): string => {
     const birthYear = parseInt(birthDate.match(/\d{4}/)?.[0] || '0');
@@ -234,27 +239,27 @@ export default async function ActorProfilePage({ params }: { params: { id: strin
             <h3 className="text-2xl font-bold mb-6">اطلاعات شخصی</h3>
             <ul className="space-y-5">
               <li className="flex items-center gap-3">
-                <Globe size={20} className="text-red-400" />{' '}
+                <Globe size={20} className="text-red-400" />
                 <div>
                   <span className="text-gray-400 text-sm">ملیت:</span> <p>{actor.nationality}</p>
                 </div>
               </li>
               <li className="flex items-center gap-3">
-                <Cake size={20} className="text-red-400" />{' '}
+                <Cake size={20} className="text-red-400" />
                 <div>
                   <span className="text-gray-400 text-sm">تاریخ تولد:</span> <p>{actor.birthDate}</p>
                 </div>
               </li>
               {age && (
                 <li className="flex items-center gap-3">
-                  <span className="text-2xl font-thin text-red-400">#</span>{' '}
+                  <span className="text-2xl font-thin text-red-400">#</span>
                   <div>
                     <span className="text-gray-400 text-sm">سن:</span> <p>{age} سال</p>
                   </div>
                 </li>
               )}
               <li className="flex items-center gap-3">
-                <Ruler size={20} className="text-red-400" />{' '}
+                <Ruler size={20} className="text-red-400" />
                 <div>
                   <span className="text-gray-400 text-sm">قد:</span> <p>{actor.height} سانتی‌متر</p>
                 </div>
