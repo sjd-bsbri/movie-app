@@ -122,24 +122,24 @@ import { movies } from '@/app/_data/movies';
 import MovieList from '@/app/_components/MovieList';
 import { Cake, Globe, Ruler, Award, Instagram, Twitter } from 'lucide-react';
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
-
+// مسیرهای استاتیک
 export function generateStaticParams() {
   return featuredActors.map((actor) => ({
     id: actor.id.toString(),
   }));
 }
 
+// بازیابی بازیگر بر اساس ID
 function getActorById(id: number) {
   return featuredActors.find((actor) => actor.id === id);
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const actor = getActorById(parseInt(params.id));
+// متادیتا برای سئو
+export async function generateMetadata(
+  { params }: { params: { id: string } }
+): Promise<Metadata> {
+  const awaitedParams = await params;
+  const actor = getActorById(parseInt(awaitedParams.id));
   if (!actor) {
     return { title: 'بازیگر یافت نشد' };
   }
@@ -149,14 +149,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function ActorProfilePage({ params }: PageProps) {
-  const actor = getActorById(parseInt(params.id));
+// صفحه اصلی بازیگر
+export default async function ActorProfilePage(
+  { params }: { params: { id: string } }
+) {
+  const awaitedParams = await params;
+  const actor = getActorById(parseInt(awaitedParams.id));
 
   if (!actor) {
     notFound();
   }
 
-  const knownForMovies = movies.filter((movie) => actor.knownFor.includes(movie.id));
+  const knownForMovies = movies.filter((movie) =>
+    actor.knownFor.includes(movie.id)
+  );
 
   const calculateAge = (birthDate: string): string => {
     const birthYear = parseInt(birthDate.match(/\d{4}/)?.[0] || '0');
@@ -169,6 +175,7 @@ export default function ActorProfilePage({ params }: PageProps) {
 
   return (
     <div className="bg-gray-950 text-white min-h-screen">
+      {/* بنر */}
       <section className="relative h-[50vh] flex items-center justify-center">
         <div className="absolute inset-0">
           <Image
@@ -207,6 +214,7 @@ export default function ActorProfilePage({ params }: PageProps) {
         </div>
       </section>
 
+      {/* بیوگرافی، جوایز، آثار */}
       <section className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
@@ -237,6 +245,7 @@ export default function ActorProfilePage({ params }: PageProps) {
             )}
           </div>
 
+          {/* اطلاعات شخصی */}
           <aside className="bg-gray-900 p-6 rounded-lg border border-gray-800 self-start lg:sticky top-24">
             <h3 className="text-2xl font-bold mb-6">اطلاعات شخصی</h3>
             <ul className="space-y-5">
