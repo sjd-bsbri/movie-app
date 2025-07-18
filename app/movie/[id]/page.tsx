@@ -145,17 +145,17 @@ async function getMovieById(id: string): Promise<Movie | undefined> {
   return movies.find((m) => m.id === numericId);
 }
 
-// متادیتای صفحه
-export async function generateMetadata(
-  { params }: { params: { id: string } }
-): Promise<Metadata> {
-  const movie = await getMovieById(params.id);
-  if (!movie) return { title: 'فیلم پیدا نشد' };
-  return {
-    title: movie.title,
-    description: movie.description,
-  };
-}
+// // متادیتای صفحه
+// export async function generateMetadata(
+//   { params }: { params: { id: string } }
+// ): Promise<Metadata> {
+//   const movie = await getMovieById(params.id);
+//   if (!movie) return { title: 'فیلم پیدا نشد' };
+//   return {
+//     title: movie.title,
+//     description: movie.description,
+//   };
+// }
 
 // کامپوننت اصلی صفحه
 export default async function MovieDetailPage(

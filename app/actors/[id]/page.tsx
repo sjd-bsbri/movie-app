@@ -16,11 +16,11 @@ function getActorById(id: number) {
   return featuredActors.find((actor) => actor.id === id);
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const actor = getActorById(parseInt(params.id)); 
-  if (!actor) return { title: 'بازیگر یافت نشد' };
-  return { title: actor.name, description: `بیوگرافی و کارنامه هنری ${actor.name}` };
-}
+// export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+//   const actor = getActorById(parseInt(params.id)); 
+//   if (!actor) return { title: 'بازیگر یافت نشد' };
+//   return { title: actor.name, description: `بیوگرافی و کارنامه هنری ${actor.name}` };
+// }
 
 export default function ActorProfilePage({ params }: { params: { id: string } }) {
   const actor = getActorById(parseInt(params.id)); 
