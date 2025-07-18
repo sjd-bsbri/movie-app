@@ -298,7 +298,13 @@ import { movies } from '@/app/_data/movies';
 import MovieList from '@/app/_components/MovieList';
 import { Cake, Globe, Ruler, Award, Instagram, Twitter } from 'lucide-react';
 
-// مسیرهای استاتیک
+// تعریف یک اینترفیس برای پراپ‌ها جهت استفاده مجدد و خوانایی بهتر
+// پراپ params به عنوان یک Promise تعریف شده است که با ساختار جدید Next.js 15 سازگار است
+interface ActorPageProps {
+  params: Promise<{ id: string }>;
+}
+
+// مسیرهای استاتیک (این بخش نیازی به تغییر ندارد)
 export function generateStaticParams() {
   return featuredActors.map((actor) => ({
     id: actor.id.toString(),
@@ -310,11 +316,15 @@ function getActorById(id: number) {
   return featuredActors.find((actor) => actor.id === id);
 }
 
-// متادیتا برای سئو
+// متادیتا برای سئو (اصلاح شده)
+// تابع async شده و نوع params به درستی به عنوان Promise تعریف شده است
 export async function generateMetadata(
-  { params }: { params: { id: string } }
+  { params }: ActorPageProps
 ): Promise<Metadata> {
-  const actor = getActorById(parseInt(params.id)); // Remove await
+  // مقدار id از پراپ params با استفاده از await استخراج می‌شود
+  const { id } = await params;
+  const actor = getActorById(parseInt(id));
+
   if (!actor) {
     return { title: 'بازیگر یافت نشد' };
   }
@@ -324,11 +334,12 @@ export async function generateMetadata(
   };
 }
 
-// صفحه اصلی بازیگر
-export default function ActorProfilePage( // Remove async
-  { params }: { params: { id: string } }
-) {
-  const actor = getActorById(parseInt(params.id)); // Remove await
+// صفحه اصلی بازیگر (اصلاح شده)
+// تابع async شده و نوع params به درستی به عنوان Promise تعریف شده است
+export default async function ActorProfilePage({ params }: ActorPageProps) {
+  // مقدار id از پراپ params با استفاده از await استخراج می‌شود
+  const { id } = await params;
+  const actor = getActorById(parseInt(id));
 
   if (!actor) {
     notFound();
@@ -359,7 +370,7 @@ export default function ActorProfilePage( // Remove async
             className="object-cover opacity-20 blur-sm"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-850 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-950 to-transparent"></div>
         </div>
         <div className="relative z-10 flex flex-col items-center text-center">
           <div className="w-48 h-48 relative mb-4">
