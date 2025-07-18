@@ -289,6 +289,7 @@
 
 
 
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -313,7 +314,7 @@ function getActorById(id: number) {
 export async function generateMetadata(
   { params }: { params: { id: string } }
 ): Promise<Metadata> {
-  const actor = getActorById(parseInt(params.id));
+  const actor = getActorById(parseInt(params.id)); // Remove await
   if (!actor) {
     return { title: 'بازیگر یافت نشد' };
   }
@@ -324,10 +325,10 @@ export async function generateMetadata(
 }
 
 // صفحه اصلی بازیگر
-export default async function ActorProfilePage(
+export default function ActorProfilePage( // Remove async
   { params }: { params: { id: string } }
 ) {
-  const actor = getActorById(parseInt(params.id));
+  const actor = getActorById(parseInt(params.id)); // Remove await
 
   if (!actor) {
     notFound();
