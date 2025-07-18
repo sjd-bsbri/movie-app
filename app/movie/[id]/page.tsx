@@ -327,7 +327,8 @@ function getMovieById(id: number): Movie | undefined {
 
 // متادیتا برای سئو
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const movie = getMovieById(parseInt(params.id));
+  const awaitedParams = await params;
+  const movie = getMovieById(parseInt(awaitedParams.id));
   if (!movie) return { title: 'فیلم پیدا نشد' };
   return {
     title: movie.title,
@@ -336,8 +337,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 // صفحه نمایش اطلاعات فیلم
-export default function MovieDetailPage({ params }: PageProps) {
-  const movie = getMovieById(parseInt(params.id));
+export default async function MovieDetailPage({ params }: PageProps) {
+  const awaitedParams = await params;
+  const movie = getMovieById(parseInt(awaitedParams.id));
   if (!movie) {
     notFound();
   }
